@@ -1,20 +1,23 @@
 name: Actualiza horarios
+
 on:
   schedule:
-    - cron: '0 9 * * *'  # 3am México
+    - cron: '0 9 * * *'
   workflow_dispatch:
+
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          curl -s "https://www.costaline.com.mx" -o c.html
-          # aquí va el scraper real, por ahora deja tu JSON base
-          echo "Actualizado $(date)" > data/actualizado.txt
-      - run: |
+      
+      - name: Marca actualización
+        run: echo "Última actualización: $(date)" > data/actualizado.txt
+      
+      - name: Sube cambios
+        run: |
           git config user.name "busmexico-bot"
           git config user.email "bot@busmexico.com"
-          git add .
-          git commit -m "auto update $(date)" || exit 0
+          git add data/actualizado.txt
+          git commit -m "auto update" || echo "sin cambios"
           git push
