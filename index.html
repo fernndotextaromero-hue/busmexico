@@ -1,12 +1,15 @@
+
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Horarios Bus - Lázaro a CDMX</title>
 <style>body{margin:0;font-family:system-ui;background:#0a0f1c;color:#e5e7eb;padding:16px}
 h1{margin:0} .sub{opacity:.7;margin:4px 0 16px} input{width:100%;padding:14px;border-radius:12px;border:1px solid #334155;background:#0f172a;color:#fff;font-size:16px}
+.btn{width:100%;margin-top:8px;padding:14px;background:#22c55e;color:#000;border:none;border-radius:12px;font-weight:700;font-size:16px}
 .card{background:#111827;border-radius:14px;padding:14px;margin:12px 0} .hora{font-size:20px;font-weight:700;color:#22c55e}
 .pueblo{font-weight:600;margin-bottom:6px} .dir{opacity:.8;font-size:13px;margin-top:6px}
 </style></head><body>
 <h1>Bus México</h1><div class="sub">Todos los pueblos: Lázaro → CDMX</div>
-<input id="q" placeholder="Escribe: Rodecia, Papanoa, Tecpan...">
+<input id="q" placeholder="Escribe: Rodecia, Papanoa, Tecpan..." onkeypress="if(event.key==='Enter')render()">
+<button class="btn" onclick="render()">Buscar horario</button>
 <div id="res"></div>
 
 <script>
@@ -15,11 +18,10 @@ const norte=["04:00","06:30","09:00","11:30","14:00","16:30","19:00"];
 const sur=["00:30","05:00","08:00","11:00","14:30","17:30","21:00"];
 const suma=(h,m)=>{let [a,b]=h.split(':').map(Number);b+=m;a+=b/60|0;b%=60;a%=24;return `${('0'+a).slice(-2)}:${('0'+b).slice(-2)}`};
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-function render(){const q=norm(document.getElementById('q').value);const r=document.getElementById('res');r.innerHTML='';if(!q)return;
+function render(){const q=norm(document.getElementById('q').value);const r=document.getElementById('res');r.innerHTML='';if(!q){r.innerHTML='<div class=card>Escribe tu pueblo y dale Buscar</div>';return}
 pueblos.filter(p=>norm(p).includes(q)).slice(0,10).forEach(p=>{const i=pueblos.indexOf(p);const offN=i*7,offS=(pueblos.length-i)*6;
 let h=`<div class=card><div class=pueblo>${p}</div><div class=dir>Hacia CDMX/Cuernavaca</div>`;
 norte.forEach(t=>h+=`<div><span class=hora>${suma(t,offN)}</span> - Costa Line</div>`);
 h+=`<div class=dir>Hacia Lázaro/Zihua</div>`;sur.forEach(t=>h+=`<div><span class=hora>${suma(t,offS)}</span> - Estrella Oro</div></div>`;r.innerHTML+=h;});}
-document.getElementById('q').addEventListener('input',render);
 </script>
 </body></html>
