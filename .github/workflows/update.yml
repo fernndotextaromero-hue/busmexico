@@ -1,4 +1,4 @@
-name: Actualiza horarios
+name: Actualiza horarios v2
 
 on:
   schedule:
@@ -11,13 +11,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Marca actualización
-        run: echo "Última actualización: $(date)" > data/actualizado.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Instala scraper
+        run: npm install axios cheerio
+      
+      - name: Jala horarios reales
+        run: |
+          node <<'EOF'
+          const fs = require('fs');
+          const axios = require('axios');
+          
+          async function run() {
+            // v2: por ahora guarda la marca de tiempo
+            // (aquí conectaremos Costa Line y Estrella de Oro)
+            const data = {
+              actualizado: new Date().toISOString(),
+              version: "v2",
+              rutas: ["Zihuatanejo-Acapulco", "Acapulco-Zihuatanejo"],
+              nota: "Robot listo para scrapear"
+            };
+            fs.mkdirSync('data', {recursive: true});
+            fs.writeFileSync('data/horarios.json', JSON.stringify(data, null, 2));
+          }
+          run();
+          EOF
       
       - name: Sube cambios
         run: |
           git config user.name "busmexico-bot"
           git config user.email "bot@busmexico.com"
-          git add data/actualizado.txt
-          git commit -m "auto update" || echo "sin cambios"
+          git add data/horarios.json
+          git commit -m "v2: actualizado $(date -u)" || echo "sin cambios"
           git push
