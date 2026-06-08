@@ -1,12 +1,14 @@
 {
   "rutas": [
-    {"hora":"05:30","origen":"Zihuatanejo","destino":"Lázaro Cárdenas"},
-    {"hora":"06:15","origen":"San Jeronimito","destino":"Zihuatanejo"},
-    {"hora":"07:00","origen":"Petatlán","destino":"Lázaro Cárdenas"},
-    {"hora":"08:30","origen":"Zihuatanejo","destino":"San Jeronimito"},
-    {"hora":"14:00","origen":"San Jeronimito","destino":"Lázaro Cárdenas"},
-    {"hora":"16:45","origen":"Lázaro Cárdenas","destino":"Zihuatanejo"},
-    {"hora":"18:20","origen":"Petatlán","destino":"San Jeronimito"},
-    {"hora":"19:30","origen":"Zihuatanejo","destino":"Petatlán"}
+    {"hora":"05:30","origen":"Zihuatanejo","destino":"Lázaro Cárdenas","empresa":"Costeños","precio":180,"paradas":["Petatlán","San Jeronimito"]},
+    {"hora":"06:15","origen":"San Jeronimito","destino":"Zihuatanejo","empresa":"Costeños","precio":45,"paradas":["Petatlán"]},
+    {"hora":"07:00","origen":"Petatlán","destino":"Lázaro Cárdenas","empresa":"Parhikuni","precio":150,"paradas":["San Jeronimito"]},
+    {"hora":"08:30","origen":"Zihuatanejo","destino":"San Jeronimito","empresa":"Estrella Blanca","precio":50,"paradas":["Petatlán"]},
+    {"hora":"10:00","origen":"Lázaro Cárdenas","destino":"Zihuatanejo","empresa":"Costeños","precio":180,"paradas":["San Jeronimito","Petatlán"]},
+    {"hora":"12:30","origen":"Papanoa","destino":"Zihuatanejo","empresa":"Local","precio":90,"paradas":["Petatlán"]},
+    {"hora":"14:00","origen":"San Jeronimito","destino":"Lázaro Cárdenas","empresa":"Parhikuni","precio":140,"paradas":[]},
+    {"hora":"16:45","origen":"Lázaro Cárdenas","destino":"Zihuatanejo","empresa":"Costeños","precio":180,"paradas":["San Jeronimito","Petatlán"]},
+    {"hora":"18:20","origen":"Petatlán","destino":"San Jeronimito","empresa":"Local","precio":30,"paradas":[]},
+    {"hora":"19:30","origen":"Zihuatanejo","destino":"Petatlán","empresa":"Costeños","precio":55,"paradas":[]}
   ]
 }
