@@ -1,1 +1,58 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BusMexico Guerrero</title><style>body{margin:0;font-family:system-ui;background:#0a192f;color:#fff;text-align:center}header{padding:20px;background:#112240}h1{color:#00d4ff;margin:0;font-size:28px}.card{background:#112240;margin:15px;padding:15px;border-radius:12px}select,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:none;font-size:16px}button{background:#00d4ff;color:#0a192f;font-weight:bold}</style></head><body><header><h1>🚍 BUSMEXICO</h1><p>Guerrero | by Fernando Texta</p></header><div class="card"><h3>Buscar Ruta Costa Grande</h3><select id="o"><option>Acapulco</option><option>Rodecia</option><option>Nuxco</option><option>Papanoa</option><option>San Luis San Pedro</option><option>Tecpan</option><option>Zihuatanejo</option></select><select id="d"><option>Zihuatanejo</option><option>Acapulco</option></select><button onclick="ver()">Ver Horarios</button><div id="r"></div></div><div class="card"><h3>📍 Mi Parada Más Cercana</h3><button onclick="gps()">Usar GPS</button><p id="g"></p></div><script>const h=["05:30 Estrella de Oro","07:00 Costa Line","09:15 Estrella Blanca","11:30 Local","14:00 Estrella de Oro","16:45 Costa Line","19:00 Última"];function ver(){document.getElementById('r').innerHTML=h.map(x=>`<p>🚌 ${x}</p>`).join('')+`<p style="color:#00d4ff;margin-top:10px">Desde ${o.value} a ${d.value}</p>`}function gps(){navigator.geolocation.getCurrentPosition(p=>{let lat=p.coords.latitude;let lugar=lat>17.2?"Nuxco / Papanoa":"Acapulco Centro";document.getElementById('g').innerText="Estás cerca de: "+lugar})}</script><p style="font-size:12px;opacity:.7">v2 - Funciona sin internet</p></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BUSMEXICO - Costa Grande</title>
+<style>
+body{background:#0a0e1a;color:#fff;font-family:system-ui;margin:0;padding:20px}
+h1{color:#00d4ff;text-align:center;margin:10px 0}
+.card{background:#1a2332;padding:15px;border-radius:12px;margin:10px 0}
+button{background:#00d4ff;color:#000;border:none;padding:12px 20px;border-radius:8px;width:100%;font-weight:bold;font-size:16px}
+small{color:#8aa}
+</style>
+</head>
+<body>
+<h1>🚌 BUSMEXICO</h1>
+<p style="text-align:center">Costa Grande - Zihuatanejo a Lázaro Cárdenas</p>
+
+<div class="card">
+<button onclick="getLocation()">📍 Usar mi ubicación</button>
+<p id="status">Toca para detectar parada más cercana</p>
+</div>
+
+<div id="result"></div>
+
+<script>
+const paradas=[
+ {n:"San Jeronimito",lat:17.623,lng:-101.562},
+ {n:"Petatlán",lat:17.538,lng:-101.273},
+ {n:"Zihuatanejo",lat:17.641,lng:-101.551},
+ {n:"Lázaro Cárdenas",lat:17.959,lng:-102.195}
+];
+function getLocation(){
+ document.getElementById('status').textContent='Obteniendo GPS...';
+ navigator.geolocation.getCurrentPosition(pos=>{
+  const {latitude,longitude}=pos.coords;
+  let cerca=paradas[0],d=999;
+  paradas.forEach(p=>{
+   const dist=Math.hypot(p.lat-latitude,p.lng-longitude);
+   if(dist<d){d=dist;cerca=p}
+  });
+  document.getElementById('status').textContent=`Cerca de: ${cerca.n}`;
+  mostrarHorarios(cerca.n);
+ },()=>{document.getElementById('status').textContent='Activa el GPS'});
+}
+async function mostrarHorarios(parada){
+ const res=await fetch('data/horarios.json');
+ const data=await res.json();
+ const ahora=new Date();
+ const h=ahora.getHours()*60+ahora.getMinutes();
+ const lista=data.rutas.filter(r=>r.origen===parada||r.destino===parada)
+ .map(r=>{const [hh,mm]=r.hora.split(':');return{...r,min:parseInt(hh)*60+parseInt(mm)-h}})
+ .filter(r=>r.min>-30).sort((a,b)=>a.min-b.min).slice(0,5);
+ document.getElementById('result').innerHTML=lista.map(r=>`<div class="card"><b>${r.hora}</b> - ${r.origen} → ${r.destino}<br><small>${r.min>0?`en ${r.min} min`:'saliendo ahora'}</small></div>`).join('')||'<div class="card">Sin salidas próximas</div>';
+}
+</script>
+</body>
+</html>
