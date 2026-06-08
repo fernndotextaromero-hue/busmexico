@@ -1,26 +1,113 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Horarios Bus - Lázaro a CDMX</title>
-<style>body{margin:0;font-family:system-ui;background:#0a0f1c;color:#e5e7eb;padding:16px}
-h1{margin:0} .sub{opacity:.7;margin:4px 0 16px} input{width:100%;padding:14px;border-radius:12px;border:1px solid #334155;background:#0f172a;color:#fff;font-size:16px}
-.btn{width:100%;margin-top:8px;padding:14px;background:#22c55e;color:#000;border:none;border-radius:12px;font-weight:700;font-size:16px}
-.card{background:#111827;border-radius:14px;padding:14px;margin:12px 0} .hora{font-size:20px;font-weight:700;color:#22c55e}
-.pueblo{font-weight:600;margin-bottom:6px} .dir{opacity:.8;font-size:13px;margin-top:6px}
-</style></head><body>
-<h1>Bus México</h1><div class="sub">Todos los pueblos: Lázaro → CDMX</div>
-<input id="q" placeholder="Escribe: Rodecia, Papanoa, Tecpan..." onkeypress="if(event.key==='Enter')render()">
-<button class="btn" onclick="render()">Buscar horario</button>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horarios Bus - Lázaro a CDMX</title>
+    <style>
+        body{margin:0;font-family:system-ui;background:#09090b;color:#fff;padding:16px;}
+        h1{margin:0;font-size:24px;} .sub{opacity:.7;margin:4px 0 16px;font-size:14px;}
+        input{width:100%;padding:14px;background:#18181b;border:1px solid #27272a;border-radius:8px;color:#fff;box-sizing:border-box;font-size:16px;}
+        .btn{width:100%;margin-top:8px;padding:14px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer;}
+        #res{margin-top:16px;}
+        .card{background:#111827;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #1f2937;}
+        .pueblo{font-weight:600;margin-bottom:6px;font-size:18px;color:#3b82f6;}
+        .dir{font-weight:bold;margin-top:8px;color:#10b981;font-size:14px;text-transform:uppercase;border-bottom:1px solid #374151;padding-bottom:2px;}
+        .hora-item{display:flex;justify-content:space-between;padding:4px 0;font-size:15px;border-bottom:1px dashed #27272a;}
+        .hora-item:last-child{border:none;}
+    </style>
+</head>
+<body>
+
+<h1>Bus México</h1>
+<div class="sub">Busca horarios de paso por tu pueblo o entronque en tiempo real.</div>
+<input id="q" placeholder="Escribe: Rodecia, La Mira, Petatlán...">
+<button class="btn" onclick="render()">Buscar Horarios</button>
 <div id="res"></div>
 
 <script>
-const pueblos=["Lázaro Cárdenas","Guacamayas","Playa Azul","La Mira","Petacalco","Feliciano","Ixtapa","Zihuatanejo","Pantla","Los Achotes","Barrio Nuevo","Joluta","San Luis La Loma","Papanoa","Rodecia","Santa Rosa de Lima","San Luis San Pedro","Tecpan de Galeana","Nuxco","San Jerónimo","El Súchil","Atoyac de Álvarez","El Ticuí","Coyuca de Benítez","Bajos del Ejido","Acapulco Ejido","Acapulco Papagayo","La Sabana","Xaltianguis","Tierra Colorada","Chilpancingo","Zumpango del Río","Iguala","Puente de Ixtla","Alpuyeca","Temixco","Cuernavaca","Tres Marías","CDMX Taxqueña"];
-const norte=["04:00","06:30","09:00","11:30","14:00","16:30","19:00"];
-const sur=["00:30","05:00","08:00","11:00","14:30","17:30","21:00"];
-const suma=(h,m)=>{let [a,b]=h.split(':').map(Number);b+=m;a+=b/60|0;b%=60;a%=24;return `${('0'+a).slice(-2)}:${('0'+b).slice(-2)}`};
-const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-function render(){const q=norm(document.getElementById('q').value);const r=document.getElementById('res');r.innerHTML='';if(!q){r.innerHTML='<div class=card>Escribe tu pueblo y dale Buscar</div>';return}
-pueblos.filter(p=>norm(p).includes(q)).slice(0,10).forEach(p=>{const i=pueblos.indexOf(p);const offN=i*7,offS=(pueblos.length-i)*6;
-let h=`<div class=card><div class=pueblo>${p}</div><div class=dir>Hacia CDMX/Cuernavaca</div>`;
-norte.forEach(t=>h+=`<div><span class=hora>${suma(t,offN)}</span> - Costa Line</div>`);
-h+=`<div class=dir>Hacia Lázaro/Zihua</div>`;sur.forEach(t=>h+=`<div><span class=hora>${suma(t,offS)}</span> - Estrella Oro</div></div>`;r.innerHTML+=h;});}
+// 1. LA RUTA EN ORDEN SECUENCIAL (De Lázaro Cárdenas hacia México D.F.)
+// Pon aquí tus 60 pueblos en orden y los minutos que tarda el autobús en llegar al que sigue.
+const RUTA_COMPLETA = [
+    { id: "lazaro cardenas", nombre: "Lázaro Cárdenas (Central)", minAlSiguiente: 15 },
+    { id: "guacamayas", nombre: "Guacamayas", minAlSiguiente: 10 },
+    { id: "la mira", nombre: "La Mira (Entronque)", minAlSiguiente: 55 },
+    { id: "rodesia", nombre: "Rodesia (Entronque)", minAlSiguiente: 75 },
+    { id: "petatlan", nombre: "Petatlán", minAlSiguiente: 0 } 
+    // Sigue agregando tus pueblos aquí abajo manteniendo este mismo formato limpio.
+];
+
+// 2. HORARIOS DE SALIDA DESDE LAS TERMINALES (Tu robot de las 3 am puede actualizar estos datos)
+const salidasLzc = ["04:00", "06:30", "09:00", "11:30", "14:00", "18:00", "22:00"]; 
+const salidasCdmx = ["00:30", "05:00", "08:00", "11:00", "14:30", "19:00", "23:15"];
+
+// 3. FUNCIÓN DE LIMPIEZA DE TEXTO (Para que perdone errores de ortografía, mayúsculas o acentos)
+const norm = s => s.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/c/g, "s").replace(/z/g, "s");
+
+// 4. FUNCIÓN MATEMÁTICA PARA CALCULAR LA HORA EXACTA SIN ERRORES
+function sumarMinutos(horaStr, minutosASumar) {
+    const [h, m] = horaStr.split(':').map(Number);
+    let d = new Date();
+    d.setHours(h, m, 0, 0);
+    d.setMinutes(d.getMinutes() + minutosASumar);
+    return d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
+
+// 5. PROCESAR LA BÚSQUEDA Y MOSTRAR RESULTADOS
+function render() {
+    const query = norm(document.getElementById("q").value);
+    const contenedor = document.getElementById("res");
+    contenedor.innerHTML = "";
+
+    if (!query) {
+        contenedor.innerHTML = "<div class='card'>Por favor, escribe el nombre de un pueblo.</div>";
+        return;
+    }
+
+    // Buscar en qué posición de la lista está el pueblo que el usuario escribió
+    const indexPueblo = RUTA_COMPLETA.findIndex(p => p.id.includes(query) || query.includes(p.id));
+
+    if (indexPueblo === -1) {
+        contenedor.innerHTML = "<div class='card'>❌ No se encontró el pueblo o entronque. Intenta de nuevo.</div>";
+        return;
+    }
+
+    const puebloBuscado = RUTA_COMPLETA[indexPueblo];
+
+    // CÁLCULO AUTOMÁTICO DE MINUTOS ACUMULADOS
+    // Ida (Saliendo de Lázaro)
+    let minutosAcumuladosIda = 0;
+    for (let i = 0; i < indexPueblo; i++) {
+        minutosAcumuladosIda += RUTA_COMPLETA[i].minAlSiguiente;
+    }
+
+    // Regreso (Hacia Lázaro)
+    let minutosAcumuladosRegreso = 0;
+    for (let i = RUTA_COMPLETA.length - 1; i > indexPueblo; i--) {
+        minutosAcumuladosRegreso += RUTA_COMPLETA[i - 1].minAlSiguiente;
+    }
+
+    // CONSTRUIR EL DISEÑO DE LA TARJETA (Mantiene tu diseño oscuro original)
+    let html = `<div class='card'>
+        <div class='pueblo'>📍 ${puebloBuscado.nombre}</div>`;
+
+    // Sección de Ida
+    html += `<div class='dir'>➡️ Ida (Saliendo de Lázaro)</div>`;
+    salidasLzc.forEach(salida => {
+        let horaPaso = sumarMinutos(salida, minutosAcumuladosIda);
+        html += `<div class='hora-item'><span>Bus de las ${salida}</span> <strong>⏳ ${horaPaso}</strong></div>`;
+    });
+
+    // Sección de Regreso
+    html += `<div class='dir'>⬅️ Regreso (Hacia Lázaro)</div>`;
+    salidasCdmx.forEach(salida => {
+        let horaPaso = sumarMinutos(salida, minutosAcumuladosRegreso);
+        html += `<div class='hora-item'><span>Bus de las ${salida}</span> <strong>⏳ ${horaPaso}</strong></div>`;
+    });
+
+    html += `</div>`;
+    contenedor.innerHTML = html;
+}
 </script>
-</body></html>
+</body>
+</html>
