@@ -1,32 +1,24 @@
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BUSMEXICO</title>
-<style>
-body{background:#fff;color:#000;font-family:system-ui;padding:15px}
-h1{color:#0077ff;text-align:center}
-.card{background:#f1f5f9;padding:14px;border-radius:12px;margin:10px 0}
-input,select,button{width:100%;padding:14px;border-radius:10px;border:1px solid #ccc;font-size:16px;margin:6px 0}
-button{background:#0077ff;color:#fff;font-weight:bold;border:0}
-</style>
-</head>
-<body>
-<h1>🚌 BUSMEXICO</h1>
-<div class="card">
-<select id="p"></select>
-<input id="o" placeholder="Escribe tu pueblo (MAYUS o minus)">
-<button onclick="b()">Ver horarios</button>
-<p id="s"></p>
-</div>
-<div id="r"></div>
-<script>
-const L=["Zihuatanejo","San Jeronimito","Petatlan","Papanoa","Lazaro Cardenas"];
-const S=document.getElementById('p');L.forEach(x=>{let o=document.createElement('option');o.value=x;o.textContent=x;S.appendChild(o)});
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BUSMEXICO – Hora de paso</title><style>body{margin:0;font-family:system-ui;background:#fff;color:#000}header{padding:14px;background:#0d47a1;color:#fff;text-align:center;font-weight:700}main{max-width:520px;margin:18px auto;padding:0 14px}input{width:100%;padding:14px;font-size:17px;border:2px solid #0d47a1;border-radius:10px}button{width:100%;margin-top:10px;padding:14px;background:#0d47a1;color:#fff;border:0;border-radius:10px;font-size:17px;font-weight:700}.r{border:1px solid #ddd;border-radius:12px;padding:12px;margin:10px 0}.t{font-size:22px;font-weight:800;color:#0d47a1}.m{color:#555;font-size:13px}</style></head><body><header>BUSMEXICO – Costa Grande</header><main><input id="p" placeholder="Escribe tu pueblo: Rodecia, Papanoa..."><button onclick="b()">Ver a qué hora pasa</button><div id="o"></div></main><script>
 const N=t=>t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-async function b(){const q=N(document.getElementById('o').value||S.value);document.getElementById('s').textContent='Buscando: '+q;const d=await (await fetch('data/horarios.json?'+Date.now())).json();const m=new Date().getHours()*60+new Date().getMinutes();const f=d.rutas.filter(t=>N(t.origen+' '+t.destino+' '+(t.paradas||'')).includes(q)).map(t=>{const[h,mi]=t.hora.split(':');return{...t,w:+h*60+ +mi-m}}).filter(t=>t.w>-60).sort((a,b)=>a.w-b.w);document.getElementById('r').innerHTML=f.map(t=>`<div class=card><b>${t.hora}</b> ${t.empresa||'Bus'}<br>${t.origen} → ${t.destino}<br><small>${t.w>0?'En '+t.w+' min':'Ahora'} • $${t.precio||'?'} MXN</small></div>`).join('')||'No hay corridas'}
-</script>
-</body>
-</html>
+async function b(){
+ const p=document.getElementById('p').value.trim();if(!p)return;
+ const o=document.getElementById('o');o.innerHTML='Buscando...';
+ const d=await fetch('data/horarios.json?v='+Date.now()).then(r=>r.json());
+ const q=N(p);let h='';
+ d.rutas.forEach(r=>{
+  const ruta=[r.origen,...r.paradas,r.destino];
+  const idx=ruta.findIndex(x=>N(x).includes(q));
+  if(idx>=0){
+   // calcula hora estimada: 12 min por parada
+   const [hh,mm]=r.hora.split(':').map(Number);
+   const total=hh*60+mm+idx*12;
+   const he=`${String(Math.floor(total/60)%24).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
+   const ahora=new Date();const mins=total-(ahora.getHours()*60+ahora.getMinutes());
+   h+=`<div class=r><div class=t>${he} – pasa por ${ruta[idx]}</div><div>${r.empresa} → ${r.destino}</div><div class=m>${r.tipo} · $${r.precio} · ${mins>0?`En ${mins} min`:'Ya pasó, mañana'}</div></div>`;
+  }
+ });
+ o.innerHTML=h||'<p style="color:#900">No encontré corridas. Verifica el nombre.</p>';
+}
+</script></body></html>
+
+
