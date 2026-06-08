@@ -1,14 +1,68 @@
 {
+  "actualizado": "2026-06-08",
   "rutas": [
-    {"hora":"05:30","origen":"Zihuatanejo","destino":"Lázaro Cárdenas","empresa":"Costeños","precio":180,"paradas":["Petatlán","San Jeronimito"]},
-    {"hora":"06:15","origen":"San Jeronimito","destino":"Zihuatanejo","empresa":"Costeños","precio":45,"paradas":["Petatlán"]},
-    {"hora":"07:00","origen":"Petatlán","destino":"Lázaro Cárdenas","empresa":"Parhikuni","precio":150,"paradas":["San Jeronimito"]},
-    {"hora":"08:30","origen":"Zihuatanejo","destino":"San Jeronimito","empresa":"Estrella Blanca","precio":50,"paradas":["Petatlán"]},
-    {"hora":"10:00","origen":"Lázaro Cárdenas","destino":"Zihuatanejo","empresa":"Costeños","precio":180,"paradas":["San Jeronimito","Petatlán"]},
-    {"hora":"12:30","origen":"Papanoa","destino":"Zihuatanejo","empresa":"Local","precio":90,"paradas":["Petatlán"]},
-    {"hora":"14:00","origen":"San Jeronimito","destino":"Lázaro Cárdenas","empresa":"Parhikuni","precio":140,"paradas":[]},
-    {"hora":"16:45","origen":"Lázaro Cárdenas","destino":"Zihuatanejo","empresa":"Costeños","precio":180,"paradas":["San Jeronimito","Petatlán"]},
-    {"hora":"18:20","origen":"Petatlán","destino":"San Jeronimito","empresa":"Local","precio":30,"paradas":[]},
-    {"hora":"19:30","origen":"Zihuatanejo","destino":"Petatlán","empresa":"Costeños","precio":55,"paradas":[]}
+    {
+      "hora": "05:00",
+      "origen": "Lázaro Cárdenas",
+      "destino": "Acapulco",
+      "empresa": "Costeños",
+      "paradas": ["El Naranjito","La Union","Petacalco","San Francisco","Feliciano","Lagunillas","Pantla","Buenavista","Zihuatanejo","Acatlan","Petatlán","San Jeronimito","Palos Blancos","Juluchuca","La Barrita","Loma Bonita","La Estación","Rodecia","Nuxco","Tecpan de Galeana","El Súchil","Tenexpo","Cayaquitos","Papanoa","Puerto Vicente Guerrero","Santa Rosa de Lima","San Luis de la Loma","San Luis San Pedro","Río Muerto","El Ticuí","Atoyac de Álvarez","San Jerónimo de Juárez","Coyuca de Benítez"],
+      "precio": 450,
+      "tipo": "Costa Sur"
+    },
+    {
+      "hora": "06:30",
+      "origen": "Zihuatanejo",
+      "destino": "Chilpancingo",
+      "empresa": "Estrella de Oro",
+      "paradas": ["Petatlán","San Jeronimito","Juluchuca","Nuxco","Tecpan","Papanoa","San Luis San Pedro","Atoyac","Coyuca de Benítez","Paso Limonero","La Venta","Xaltianguis","El Ocotito","Petaquillas"],
+      "precio": 380,
+      "tipo": "Intermedio"
+    },
+    {
+      "hora": "07:15",
+      "origen": "Acapulco",
+      "destino": "CDMX Observatorio",
+      "empresa": "Costa Line",
+      "paradas": ["Coyuca de Benítez","Paso Limonero","La Venta","Xaltianguis","El Ocotito","Petaquillas","Chilpancingo de los Bravo","Zumpango del Río","Mezcala","Iguala de la Independencia","Buenavista de Cuéllar","Amacuzac","Puente de Ixtla","Alpuyeca","Cuernavaca","Tres Marías","San Pedro Mártir","Topilejo"],
+      "precio": 720,
+      "tipo": "Autopista del Sol"
+    },
+    {
+      "hora": "08:00",
+      "origen": "Lázaro Cárdenas",
+      "destino": "CDMX Observatorio",
+      "empresa": "ETN",
+      "paradas": ["Arteaga","Nueva Italia","Lombardía","Uruapan","Pátzcuaro","Morelia","Zinapécuaro","Maravatío","Atlacomulco","Toluca"],
+      "precio": 980,
+      "tipo": "Sierra Michoacán"
+    },
+    {
+      "hora": "13:00",
+      "origen": "Acapulco",
+      "destino": "Zihuatanejo",
+      "empresa": "Costeños",
+      "paradas": ["Coyuca de Benítez","San Jerónimo de Juárez","Atoyac de Álvarez","El Ticuí","Río Muerto","San Luis San Pedro","San Luis de la Loma","Santa Rosa de Lima","Puerto Vicente Guerrero","Papanoa","Cayaquitos","Tenexpo","El Súchil","Tecpan de Galeana","Nuxco","Rodecia","La Estación","Loma Bonita","La Barrita","Juluchuca","Palos Blancos","San Jeronimito","Petatlán","Acatlan"],
+      "precio": 450,
+      "tipo": "Costa Sur"
+    },
+    {
+      "hora": "15:30",
+      "origen": "CDMX Observatorio",
+      "destino": "Lázaro Cárdenas",
+      "empresa": "Parhikuni",
+      "paradas": ["Topilejo","Tres Marías","Cuernavaca","Alpuyeca","Puente de Ixtla","Amacuzac","Iguala","Mezcala","Zumpango del Río","Chilpancingo","Petaquillas","El Ocotito","Xaltianguis","La Venta","Coyuca","Atoyac","Papanoa","Tecpan","Nuxco","San Jeronimito","Petatlán","Zihuatanejo","Buenavista","Pantla","Lagunillas","Feliciano","Petacalco","La Union","El Naranjito"],
+      "precio": 1150,
+      "tipo": "Costa Completa"
+    },
+    {
+      "hora": "20:00",
+      "origen": "Morelia",
+      "destino": "Lázaro Cárdenas",
+      "empresa": "Autovías",
+      "paradas": ["Pátzcuaro","Uruapan","Nueva Italia","Arteaga","La Mira"],
+      "precio": 520,
+      "tipo": "Noche Sierra"
+    }
   ]
 }
