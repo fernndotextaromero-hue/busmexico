@@ -1,0 +1,12 @@
+{
+  "rutas": [
+    {"hora":"05:30","origen":"Zihuatanejo","destino":"Lázaro Cárdenas"},
+    {"hora":"06:15","origen":"San Jeronimito","destino":"Zihuatanejo"},
+    {"hora":"07:00","origen":"Petatlán","destino":"Lázaro Cárdenas"},
+    {"hora":"08:30","origen":"Zihuatanejo","destino":"San Jeronimito"},
+    {"hora":"14:00","origen":"San Jeronimito","destino":"Lázaro Cárdenas"},
+    {"hora":"16:45","origen":"Lázaro Cárdenas","destino":"Zihuatanejo"},
+    {"hora":"18:20","origen":"Petatlán","destino":"San Jeronimito"},
+    {"hora":"19:30","origen":"Zihuatanejo","destino":"Petatlán"}
+  ]
+}
