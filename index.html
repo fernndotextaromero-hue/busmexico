@@ -21,30 +21,55 @@
 
 <h1>Bus México</h1>
 <div class="sub">Busca horarios de paso por tu pueblo o entronque en tiempo real.</div>
-<input id="q" placeholder="Escribe: Rodecia, La Mira, Petatlán...">
+<input id="q" placeholder="Escribe: Zihuatanejo, Suchil, La Mira...">
 <button class="btn" onclick="render()">Buscar Horarios</button>
 <div id="res"></div>
 
 <script>
-// 1. LA RUTA EN ORDEN SECUENCIAL (De Lázaro Cárdenas hacia México D.F.)
-// Pon aquí tus 60 pueblos en orden y los minutos que tarda el autobús en llegar al que sigue.
+// 1. RUTA COMPLETA DE COSTA A COSTA (Michoacán / Costa Grande / Acapulco / Costa Chica -> CDMX)
 const RUTA_COMPLETA = [
     { id: "lazaro cardenas", nombre: "Lázaro Cárdenas (Central)", minAlSiguiente: 15 },
     { id: "guacamayas", nombre: "Guacamayas", minAlSiguiente: 10 },
-    { id: "la mira", nombre: "La Mira (Entronque)", minAlSiguiente: 55 },
-    { id: "rodesia", nombre: "Rodesia (Entronque)", minAlSiguiente: 75 },
-    { id: "petatlan", nombre: "Petatlán", minAlSiguiente: 0 } 
-    // Sigue agregando tus pueblos aquí abajo manteniendo este mismo formato limpio.
+    { id: "la mira", nombre: "La Mira (Entronque)", minAlSiguiente: 20 },
+    { id: "buena vista", nombre: "Buenavista", minAlSiguiente: 15 },
+    { id: "rodesia", nombre: "Rodesia (Entronque)", minAlSiguiente: 15 },
+    { id: "lagunillas", nombre: "Lagunillas", minAlSiguiente: 15 },
+    { id: "pantla", nombre: "Pantla", minAlSiguiente: 10 },
+    { id: "barrio viejo", nombre: "Barrio Viejo (San José Ixtapa)", minAlSiguiente: 12 },
+    { id: "ixtapa", nombre: "Ixtapa (Crucero)", minAlSiguiente: 10 },
+    { id: "zihuatanejo", nombre: "Zihuatanejo (Terminal)", minAlSiguiente: 12 },
+    { id: "el coacuyul", nombre: "El Coacuyul", minAlSiguiente: 18 },
+    { id: "san jeronimito", nombre: "San Jeronimito", minAlSiguiente: 12 },
+    { id: "petatlan", nombre: "Petatlán", minAlSiguiente: 15 },
+    { id: "palos blancos", nombre: "Palos Blancos", minAlSiguiente: 15 },
+    { id: "coyuquilla", nombre: "Coyuquilla (Norte/Sur)", minAlSiguiente: 20 },
+    { id: "papanoa", nombre: "Papanoa", minAlSiguiente: 25 },
+    { id: "techan de galeana", nombre: "Tecpan de Galeana", minAlSiguiente: 10 },
+    { id: "tenexpa", nombre: "Tenexpa (Entronque)", minAlSiguiente: 15 },
+    { id: "suchil", nombre: "El Súchil", minAlSiguiente: 12 },
+    { id: "san jeronimo", nombre: "San Jerónimo (Benito Juárez)", minAlSiguiente: 10 },
+    { id: "atoyac", nombre: "Atoyac de Álvarez (Entronque)", minAlSiguiente: 25 },
+    { id: "coyuca de benitez", nombre: "Coyuca de Benítez", minAlSiguiente: 35 },
+    { id: "pie de la cuesta", nombre: "Pie de la Cuesta", minAlSiguiente: 25 },
+    { id: "acapulco", nombre: "Acapulco (Central Ejido / Las Cruces)", minAlSiguiente: 25 },
+    { id: "tres palos", nombre: "Tres Palos", minAlSiguiente: 30 },
+    { id: "san marcos", nombre: "San Marcos (Costa Chica)", minAlSiguiente: 45 },
+    { id: "tierra colorada", nombre: "Tierra Colorada", minAlSiguiente: 50 },
+    { id: "chilpancingo", nombre: "Chilpancingo (Central)", minAlSiguiente: 45 },
+    { id: "iguala", nombre: "Iguala (Central)", minAlSiguiente: 40 },
+    { id: "taxco", nombre: "Taxco de Alarcón", minAlSiguiente: 65 },
+    { id: "cuernavaca", nombre: "Cuernavaca (Central)", minAlSiguiente: 75 },
+    { id: "ciudad de mexico", nombre: "Ciudad de México (CDMX Central Sur/Norte)", minAlSiguiente: 0 }
 ];
 
-// 2. HORARIOS DE SALIDA DESDE LAS TERMINALES (Tu robot de las 3 am puede actualizar estos datos)
+// 2. HORARIOS DE SALIDA DESDE LAS TERMINALES EXTREMAS
 const salidasLzc = ["04:00", "06:30", "09:00", "11:30", "14:00", "18:00", "22:00"]; 
 const salidasCdmx = ["00:30", "05:00", "08:00", "11:00", "14:30", "19:00", "23:15"];
 
-// 3. FUNCIÓN DE LIMPIEZA DE TEXTO (Para que perdone errores de ortografía, mayúsculas o acentos)
-const norm = s => s.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/c/g, "s").replace(/z/g, "s");
+// 3. FUNCIÓN DE LIMPIEZA DE TEXTO ULTRA FLEXIBLE
+const norm = s => s.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/c/g, "s").replace(/z/g, "s").replace(/ñ/g, "n");
 
-// 4. FUNCIÓN MATEMÁTICA PARA CALCULAR LA HORA EXACTA SIN ERRORES
+// 4. CÁLCULO DE ADICIÓN DE TIEMPOS HORARIOS
 function sumarMinutos(horaStr, minutosASumar) {
     const [h, m] = horaStr.split(':').map(Number);
     let d = new Date();
@@ -53,56 +78,52 @@ function sumarMinutos(horaStr, minutosASumar) {
     return d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: true });
 }
 
-// 5. PROCESAR LA BÚSQUEDA Y MOSTRAR RESULTADOS
+// 5. RENDERIZADO DE RESULTADOS DE BÚSQUEDA
 function render() {
     const query = norm(document.getElementById("q").value);
     const contenedor = document.getElementById("res");
     contenedor.innerHTML = "";
 
     if (!query) {
-        contenedor.innerHTML = "<div class='card'>Por favor, escribe el nombre de un pueblo.</div>";
+        contenedor.innerHTML = "<div class='card'>⚠️ Por favor, escribe un pueblo, entronque o ciudad.</div>";
         return;
     }
 
-    // Buscar en qué posición de la lista está el pueblo que el usuario escribió
-    const indexPueblo = RUTA_COMPLETA.findIndex(p => p.id.includes(query) || query.includes(p.id));
+    const indexPueblo = RUTA_COMPLETA.findIndex(p => {
+        const idNorm = norm(p.id);
+        return idNorm.includes(query) || query.includes(idNorm);
+    });
 
     if (indexPueblo === -1) {
-        contenedor.innerHTML = "<div class='card'>❌ No se encontró el pueblo o entronque. Intenta de nuevo.</div>";
+        contenedor.innerHTML = "<div class='card'>❌ Localidad no localizada. Verifica la ortografía e intenta de nuevo.</div>";
         return;
     }
 
     const puebloBuscado = RUTA_COMPLETA[indexPueblo];
 
-    // CÁLCULO AUTOMÁTICO DE MINUTOS ACUMULADOS
-    // Ida (Saliendo de Lázaro)
     let minutosAcumuladosIda = 0;
     for (let i = 0; i < indexPueblo; i++) {
         minutosAcumuladosIda += RUTA_COMPLETA[i].minAlSiguiente;
     }
 
-    // Regreso (Hacia Lázaro)
     let minutosAcumuladosRegreso = 0;
     for (let i = RUTA_COMPLETA.length - 1; i > indexPueblo; i--) {
         minutosAcumuladosRegreso += RUTA_COMPLETA[i - 1].minAlSiguiente;
     }
 
-    // CONSTRUIR EL DISEÑO DE LA TARJETA (Mantiene tu diseño oscuro original)
     let html = `<div class='card'>
-        <div class='pueblo'>📍 ${puebloBuscado.nombre}</div>`;
+        <div class='pueblo'>📍 En tránsito por: ${puebloBuscado.nombre}</div>`;
 
-    // Sección de Ida
-    html += `<div class='dir'>➡️ Ida (Saliendo de Lázaro)</div>`;
+    html += `<div class='dir'>➡️ Salidas desde Lázaro Cárdenas</div>`;
     salidasLzc.forEach(salida => {
         let horaPaso = sumarMinutos(salida, minutosAcumuladosIda);
-        html += `<div class='hora-item'><span>Bus de las ${salida}</span> <strong>⏳ ${horaPaso}</strong></div>`;
+        html += `<div class='hora-item'><span>Origen LZC: ${salida}</span> <strong>⏳ Pasa aprox: ${horaPaso}</strong></div>`;
     });
 
-    // Sección de Regreso
-    html += `<div class='dir'>⬅️ Regreso (Hacia Lázaro)</div>`;
+    html += `<div class='dir'>⬅️ Regreso desde CDMX</div>`;
     salidasCdmx.forEach(salida => {
         let horaPaso = sumarMinutos(salida, minutosAcumuladosRegreso);
-        html += `<div class='hora-item'><span>Bus de las ${salida}</span> <strong>⏳ ${horaPaso}</strong></div>`;
+        html += `<div class='hora-item'><span>Origen CDMX: ${salida}</span> <strong>⏳ Pasa aprox: ${horaPaso}</strong></div>`;
     });
 
     html += `</div>`;
