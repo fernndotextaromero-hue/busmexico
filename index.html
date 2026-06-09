@@ -10,14 +10,15 @@
     body{margin:0;font-family:system-ui,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;}
     h1{margin:0;font-size:24px;text-align:center;color:#f0883e;}
     .sub{text-align:center;font-size:14px;color:#8b949e;margin-bottom:20px;}
-    input{width:100%;padding:14px;background:#161b22;border:1px solid #30363d;border-radius:8px;color:#fff;font-size:16px;box-sizing:border-box;}
-    .btn{width:100%;margin-top:8px;padding:14px;background:#238636;border:none;border-radius:8px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;}
+    input,textarea{width:100%;padding:14px;background:#161b22;border:1px solid #30363d;border-radius:8px;color:#fff;font-size:16px;box-sizing:border-box;margin-bottom:12px;font-family:inherit;}
+    .btn{width:100%;padding:14px;background:#238636;border:none;border-radius:8px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;}
     #res{margin-top:16px;}
-    .card{background:#161b22;border-radius:8px;padding:16px;border:1px solid #30363d;}
+    .card{background:#161b22;border-radius:8px;padding:16px;border:1px solid #30363d;margin-bottom:16px;}
     .pueblo{font-weight:600;margin-bottom:12px;font-size:18px;color:#58a6ff;}
     .dir{font-weight:bold;margin-top:12px;color:#f0883e;border-bottom:1px solid #21262d;padding-bottom:4px;}
     .hora-item{display:flex;justify-content:between;padding:8px 0;border-bottom:1px solid #21262d;}
     .hora-item:last-child{border:none;}
+    .form-title{font-size:16px;color:#58a6ff;font-weight:bold;margin-bottom:8px;text-align:center;}
   </style>
 </head>
 <body>
@@ -26,6 +27,7 @@
   <div class="sub">Busca horarios de paso por tu localidad</div>
   <input id="q" placeholder="Escribe: Zihuatanejo, Atoyac, Acapulco...">
   <button class="btn" onclick="render()">Buscar Horarios</button>
+  
   <div id="res"></div>
 
 <script>
@@ -102,19 +104,16 @@ function render() {
 
   const puebloBuscado = RUTA_COMPLETA[indexPueblo];
 
-  // CÁLCULO PARA LA IDA (Lzc -> CDMX)
   let minutosAcumuladosIda = 0;
   for (let i = 0; i < indexPueblo; i++) {
     minutosAcumuladosIda += RUTA_COMPLETA[i].minutos || 0;
   }
 
-  // CÁLCULO PARA EL REGRESO (CDMX -> Lzc)
   let minutosAcumuladosRegreso = 0;
   for (let i = RUTA_COMPLETA.length - 1; i > indexPueblo; i--) {
     minutosAcumuladosRegreso += RUTA_COMPLETA[i].minutos || 0;
   }
 
-  // CONSTRUCCIÓN DEL HTML DINÁMICO
   let html = `<div class='card'>
     <div class='pueblo'>📍 En tránsito por: <strong>${puebloBuscado.nombre}</strong></div>`;
 
@@ -134,6 +133,16 @@ function render() {
   contenedor.innerHTML = html;
 }
 </script>
+
+<div class="card" style="margin-top: 30px;">
+  <div class="form-title">📢 ¿Cambió algún horario? ¡Avísame!</div>
+  <form action="https://formsubmit.co/fernndotextaromero@gmail.com" method="POST">
+    <input type="text" name="Pueblo" placeholder="¿Qué pueblo o ruta cambió?" required>
+    <textarea name="Nuevos_Horarios" rows="3" placeholder="Escribe aquí los nuevos horarios de salida..." required></textarea>
+    <input type="hidden" name="_captcha" value="false">
+    <button type="submit" class="btn" style="background: #f0883e;">Enviar Reporte Seguro</button>
+  </form>
+</div>
 
 <footer style="text-align: center; margin-top: 30px; padding: 10px; font-size: 0.8em; color: gray;">
   <p>&copy; 2026 busmexico por Fernando Texta-Romero. Todos los derechos reservados.</p>
