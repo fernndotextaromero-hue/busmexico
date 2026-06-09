@@ -113,24 +113,31 @@ function render() {
         minutosAcumuladosRegreso += RUTA_COMPLETA[i - 1].minAlSiguiente;
     }
 
-    let html = `<div class='card'>
-        <div class='pueblo'>📍 En tránsito por: ${puebloBuscado.nombre}</div>`;
+            let html = `<div class='card'>
+        <div class='pueblo'>📍 En tránsito por:</div>`;
 
-    html += `<div class='dir'>➡️ Salidas desde Lázaro Cárdenas</div>`;
-    salidasLzc.forEach(salida => {
-        let horaPaso = sumarMinutos(salida, minutosAcumuladosIda);
-        html += `<div class='hora-item'><span>Origen LZC: ${salida}</span> <strong>⏳ Pasa aprox: ${horaPaso}</strong></div>`;
-    });
+        html += `<div class='dir'>➡️ Salidas desde:</div>`;
+        salidasLzc.forEach(salida => {
+            let horaPaso = sumarMinutos(salida, minutosAcumuladosRegreso);
+            html += `<div class='hora-item'><span>${horaPaso}</span></div>`;
+        });
 
-    html += `<div class='dir'>⬅️ Regreso desde CDMX</div>`;
-    salidasCdmx.forEach(salida => {
-        let horaPaso = sumarMinutos(salida, minutosAcumuladosRegreso);
-        html += `<div class='hora-item'><span>Origen CDMX: ${salida}</span> <strong>⏳ Pasa aprox: ${horaPaso}</strong></div>`;
-    });
+        html += `<div class='dir'>⬅️ Regreso desde:</div>`;
+        salidasCdmx.forEach(salida => {
+            let horaPaso = sumarMinutos(salida, minutosAcumuladosRegreso);
+            html += `<div class='hora-item'><span>${horaPaso}</span></div>`;
+        });
 
-    html += `</div>`;
-    contenedor.innerHTML = html;
-}
-</script>
+        html += `</div>`;
+        contenedor.innerHTML = html;
+    }
+    </script>
+
+    <footer style="text-align: center; margin-top: 20px; font-size: 0.8em; color: gray;">
+        <p>&copy; 2026 busmexico por Fernando Texta-Romero. Todos los derechos reservados.</p>
+    </footer>
+
 </body>
 </html>
+
+
